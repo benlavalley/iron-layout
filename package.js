@@ -1,12 +1,12 @@
 Package.describe({
   name: 'iron:layout',
   summary: 'Dynamic layouts which enable rendering dynamic templates into regions on a page.',
-  version: '1.0.12',
+  version: '1.0.13',
   git: 'https://github.com/iron-meteor/iron-layout'
 });
 
 Package.on_use(function (api) {
-  api.versionsFrom('METEOR@0.9.2');
+  api.versionsFrom('METEOR@1.8.1');
 
   // so our default_layout gets compiled
   api.use('templating');
@@ -20,7 +20,7 @@ Package.on_use(function (api) {
   api.imply('iron:core');
 
   // dynamic templates
-  api.use('iron:dynamic-template@1.0.12');
+  api.use('iron:dynamic-template@1.0.13');
 
   // if you use iron-layout you should get iron-dynamic-template for free!
   api.imply('iron:dynamic-template');
@@ -35,7 +35,7 @@ Package.on_use(function (api) {
 });
 
 Package.on_test(function (api) {
-  api.versionsFrom('METEOR@0.9.2');
+  api.versionsFrom('METEOR@1.8.1');
 
   api.use('iron:layout');
   api.use('tinytest');

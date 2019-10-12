@@ -16,7 +16,7 @@ Package.on_use(function (api) {
   api.use('underscore');
   api.use('tracker'); // for Deps
 
-  api.use('iron:core@1.0.11');
+  api.use('iron:core@1.0.12');
   api.imply('iron:core');
 
   // dynamic templates

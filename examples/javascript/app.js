@@ -20,7 +20,7 @@ if (Meteor.isClient) {
       to: 'aside'
     });
 
-    Deps.flush();
+    Tracker.flush();
 
     var renderedRegions = layout.endRendering();
     console.log(renderedRegions);

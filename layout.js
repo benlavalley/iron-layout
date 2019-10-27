@@ -169,7 +169,7 @@ Layout.prototype.beginRendering = function (onComplete) {
     onComplete && onComplete(regions);
   });
 
-  Deps.afterFlush(this._finishRenderingTransaction);
+  Tracker.afterFlush(this._finishRenderingTransaction);
 
   if (this._renderedRegions)
     throw new Error("You called beginRendering again before calling endRendering");
@@ -196,7 +196,7 @@ Layout.prototype._endRendering = function (opts) {
   // them. 
   opts = opts || {};
   if (opts.flush !== false)
-    Deps.flush();
+    Tracker.flush();
   var renderedRegions = this._renderedRegions || {};
   this._renderedRegions = null;
   return _.keys(renderedRegions);
@@ -332,7 +332,7 @@ if (typeof Template !== 'undefined') {
    *  {{> contentFor region="footer" template="SomeTemplate" data=someData}}
    *
    * Note: The helper is a UI.Component object instead of a function so that
-   * Meteor UI does not create a Deps.Dependency.
+   * Meteor UI does not create a Tracker.Dependency.
    *
    * XXX what happens if the parent that calls contentFor gets destroyed?
    * XXX the layout.region should be reset to be empty?

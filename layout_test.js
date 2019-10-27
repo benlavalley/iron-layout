@@ -4,7 +4,7 @@ String.prototype.compact = function () {
 
 var ReactiveVar = function (value) {
   this._value = value;
-  this._dep = new Deps.Dependency;
+  this._dep = new Tracker.Dependency;
 };
 
 ReactiveVar.prototype.get = function () {
@@ -21,7 +21,7 @@ ReactiveVar.prototype.set = function (value) {
 
 ReactiveVar.prototype.clear = function () {
   this._value = null;
-  this._dep = new Deps.Dependency;
+  this._dep = new Tracker.Dependency;
 };
 
 // a reactive template variable we can use
@@ -44,7 +44,7 @@ var withRenderedTemplate = function (template, callback) {
   withDiv(function (el) {
     template = _.isString(template) ? Template[template] : template;
     Blaze.render(template, el);
-    Deps.flush();
+    Tracker.flush();
     callback(el);
   });
 };
@@ -114,12 +114,12 @@ Tinytest.add('Layout - data - render always clears data', function (test) {
   withRenderedTemplate(layout.create(), function (el) {
     layout.template('LayoutOne');
     layout.render('One', {data: 'firstData'});
-    Deps.flush();
+    Tracker.flush();
     test.equal(el.innerHTML.compact(), 'layout-One-firstData-');
 
     // rendering with no data, should now not have data
     layout.render('One')
-    Deps.flush();
+    Tracker.flush();
     test.equal(el.innerHTML.compact(), 'layout-One--');
   });
 });
@@ -136,13 +136,13 @@ Tinytest.add('Layout - data - in-place changes to data are not missed', function
       return Posts.findOne();
     });
     layout.render('OneFoo');
-    Deps.flush();
+    Tracker.flush();
     test.equal(el.innerHTML.compact(), 'layout-One-bar-');
     
     var post = layout.data(); // grab the internal reference, if exists
     post.foo = 'baz';
     Posts.update(post._id, {$set: {foo: post.foo}});
-    Deps.flush();
+    Tracker.flush();
     test.equal(el.innerHTML.compact(), 'layout-One-baz-');
   });
 });
@@ -157,32 +157,32 @@ Tinytest.add('Layout - JavaScript layout', function (test) {
 
     // then we'll choose a layout
     layout.template('LayoutWithData');
-    Deps.flush();
+    Tracker.flush();
     test.equal(el.innerHTML.compact(), 'layout--');
 
     // render the One template into the main region
     layout.render('One');
-    Deps.flush();
+    Tracker.flush();
     test.equal(el.innerHTML.compact(), 'layout--One--');
 
     // now render Two into the footer region
     layout.render('Two', {to: 'footer'});
-    Deps.flush();
+    Tracker.flush();
     test.equal(el.innerHTML.compact(), 'layout--One--Two--');
 
 
     // now set a global layout data context!
     layout.data('DATA');
-    Deps.flush();
+    Tracker.flush();
     test.equal(el.innerHTML.compact(), 'layout-DATA-One-DATA-Two-DATA-');
 
     // and finally let's override some specific region data contexts! 
     layout.render('One', {data: 'ONE'});
-    Deps.flush();
+    Tracker.flush();
     test.equal(el.innerHTML.compact(), 'layout-DATA-One-ONE-Two-DATA-');
 
     layout.render('Two', {to: 'footer', data: 'TWO'});
-    Deps.flush();
+    Tracker.flush();
     test.equal(el.innerHTML.compact(), 'layout-DATA-One-ONE-Two-TWO-');
   });
 });
@@ -204,7 +204,7 @@ Tinytest.add('Layout - JavaScript rendering transactions', function (test) {
     layout.render('LayoutOnePage');
     layout.render('Aside', {to: 'aside'});
 
-    Deps.flush();
+    Tracker.flush();
     test.equal(calls.length, 1);
     test.equal(calls[0].regions, ['main', 'aside', 'footer']);
   });
@@ -239,7 +239,7 @@ Tinytest.add('Layout - rendering transactions multiple calls to beginRendering',
     layout.render('LayoutOnePage');
 
     // now actually flush
-    Deps.flush();
+    Tracker.flush();
     test.equal(calls.length, 2, "onComplete called for both rendering transactions");
 
     // first time, the rendered regions only include the programmatic ones
@@ -274,33 +274,33 @@ Tinytest.add('Layout - has, clear and clearAll', function (test) {
 
     // render the One template into the main region
     layout.render('One');
-    Deps.flush();
+    Tracker.flush();
 
     // now render Two into the footer region
     layout.render('Two', {to: 'footer'});
-    Deps.flush();
+    Tracker.flush();
 
     // make sure everything rendered correctly
     test.equal(el.innerHTML.compact(), 'layout-One--Two--');
 
     // now clear footer region
     layout.clear("footer");
-    Deps.flush();
+    Tracker.flush();
     test.equal(el.innerHTML.compact(), 'layout-One--');
 
     // clear main region
     layout.clear();
-    Deps.flush();
+    Tracker.flush();
     test.equal(el.innerHTML.compact(), 'layout-');
 
     // now build it back up again and clearAll
     layout.render('One');
     layout.render('Two', {to: 'footer'});
-    Deps.flush();
+    Tracker.flush();
     test.equal(el.innerHTML.compact(), 'layout-One--Two--');
 
     layout.clearAll();
-    Deps.flush();
+    Tracker.flush();
     test.equal(el.innerHTML.compact(), 'layout-');
   });
 });
@@ -311,7 +311,7 @@ Tinytest.add('Layout - default layout', function (test) {
 
   withRenderedTemplate(layout.create(), function (el) {
     layout.render('Plain');
-    Deps.flush();
+    Tracker.flush();
     test.equal(el.innerHTML.compact(), 'plain', 'no default layout');
   });
 });
@@ -321,11 +321,11 @@ Tinytest.add('Layout - hasRegion', function (test) {
 
   withRenderedTemplate(layout.create(), function (el) {
     layout.template('LayoutWithHasRegion');
-    Deps.flush();
+    Tracker.flush();
     test.equal(el.innerHTML.compact(), 'no', 'hasRegion mis-reported true');
     
     layout.render('One', {to: 'test'});
-    Deps.flush();
+    Tracker.flush();
     test.equal(el.innerHTML.compact(), 'yes', 'hasRegion mis-reported false');
   });
 });

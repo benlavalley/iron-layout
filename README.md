@@ -96,7 +96,7 @@ if (Meteor.isClient) {
     // render the MyFooter template to the 'footer' region of the layout. Also set a custom data context for the region.
     layout.render('MyFooter', {to: 'footer', data: {title: 'Custom footer data context'}});
     
-    // force a Deps.flush and get an object of
+    // force a Tracker.flush and get an object of
     // regions that have been rendered. In this case:
     // => {"main": true, "header": true, "footer": true}
     var renderedRegions = layout.endRendering();
